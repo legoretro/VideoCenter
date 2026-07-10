@@ -3,19 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pure Video Host</title>
+  <title>VideoCenter</title>
   <style>
     :root {
       color-scheme: light;
-      --ink: #17201c;
-      --muted: #5d6b65;
-      --line: #d9e2dc;
-      --paper: #f7f8f4;
+      --ink: #16201d;
+      --muted: #5d6764;
+      --line: #d7dfdc;
+      --paper: #f4f7f2;
       --panel: #ffffff;
-      --accent: #0e7c72;
-      --accent-strong: #075e58;
-      --warn: #b84c20;
-      --soft: #eef6f3;
+      --accent: #0d766f;
+      --accent-dark: #095a55;
+      --focus: rgba(13, 118, 111, 0.18);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -24,332 +23,163 @@
     }
 
     body {
-      margin: 0;
       min-height: 100vh;
+      margin: 0;
       background: var(--paper);
       color: var(--ink);
     }
 
-    button,
-    input {
-      font: inherit;
-    }
-
-    header {
-      border-bottom: 1px solid var(--line);
-      background: #ffffff;
-    }
-
-    .wrap {
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 18px 0;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background:
-        linear-gradient(135deg, rgba(14, 124, 114, 0.16), rgba(237, 141, 70, 0.18)),
-        #ffffff;
-      border: 1px solid var(--line);
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-    }
-
-    .mark::before {
-      content: "";
-      width: 0;
-      height: 0;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      border-left: 13px solid var(--accent);
-      margin-left: 3px;
-    }
-
-    h1,
-    h2,
-    p {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: 1.15rem;
-      line-height: 1.2;
-      letter-spacing: 0;
-    }
-
-    .subtle {
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
     main {
-      padding: 28px 0 42px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-      gap: 20px;
-      align-items: start;
+      width: min(760px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 44px 0;
     }
 
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
-      overflow: hidden;
+      padding: 22px;
     }
 
-    .panel-head {
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid var(--line);
+    .top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
+      margin-bottom: 22px;
     }
 
-    .panel-head h2 {
-      font-size: 1rem;
+    h1,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 5vw, 2.35rem);
+      line-height: 1.05;
       letter-spacing: 0;
     }
 
-    .panel-body {
-      padding: 18px;
-    }
-
-    .stack {
-      display: grid;
-      gap: 14px;
-    }
-
-    label {
-      display: grid;
-      gap: 7px;
+    p {
       color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 650;
+      line-height: 1.45;
+      margin-top: 7px;
     }
 
-    input[type="text"],
-    input[type="url"] {
-      width: 100%;
-      border: 1px solid var(--line);
+    .upload {
+      flex: 0 0 auto;
+      min-height: 44px;
+      padding: 0 16px;
       border-radius: 7px;
-      padding: 11px 12px;
-      color: var(--ink);
-      background: #ffffff;
-      outline: none;
-    }
-
-    input[type="text"]:focus,
-    input[type="url"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(14, 124, 114, 0.14);
-    }
-
-    .toggles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .check {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 38px;
-      padding: 0 12px;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      color: var(--ink);
-      font-size: 0.9rem;
-      font-weight: 600;
-      background: #ffffff;
-      cursor: pointer;
-    }
-
-    .check input {
-      accent-color: var(--accent);
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-    }
-
-    button,
-    .button-link {
-      appearance: none;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      min-height: 38px;
-      padding: 0 12px;
-      background: #ffffff;
-      color: var(--ink);
-      font-weight: 700;
-      cursor: pointer;
+      background: var(--accent);
+      color: #ffffff;
       text-decoration: none;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
     }
 
-    button.primary,
-    .button-link.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #ffffff;
+    .upload:hover {
+      background: var(--accent-dark);
     }
 
-    button:hover,
-    .button-link:hover {
-      border-color: var(--accent);
-    }
-
-    button.primary:hover,
-    .button-link.primary:hover {
-      background: var(--accent-strong);
-      border-color: var(--accent-strong);
-    }
-
-    .output {
+    label {
       display: grid;
-      gap: 12px;
-    }
-
-    .link-row {
-      display: grid;
-      grid-template-columns: 112px minmax(0, 1fr) auto;
-      gap: 9px;
-      align-items: center;
-    }
-
-    .link-label {
+      gap: 8px;
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.86rem;
       font-weight: 750;
+      margin-bottom: 16px;
     }
 
-    .link-box {
-      min-width: 0;
+    input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--ink);
+      background: #ffffff;
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    .result {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 12px;
+    }
+
+    .url {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #edf5f2;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      overflow: hidden;
+      color: #24302d;
+      font-size: 0.94rem;
+    }
+
+    .url span {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      border: 1px solid var(--line);
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--accent);
       border-radius: 7px;
-      background: var(--soft);
-      padding: 10px 11px;
-      color: #23312c;
-      font-size: 0.88rem;
-    }
-
-    .preview {
-      aspect-ratio: 16 / 9;
-      background: #0a0d0c;
-      border: 1px solid #101514;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .preview iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-      background: #000000;
-    }
-
-    .library {
-      display: grid;
-      gap: 12px;
-    }
-
-    .video-item {
-      display: grid;
-      gap: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
       background: #ffffff;
-    }
-
-    .video-title {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .video-title h3 {
-      margin: 0;
-      font-size: 0.98rem;
-      letter-spacing: 0;
-    }
-
-    .badge {
-      border: 1px solid #f0d0bd;
-      border-radius: 999px;
-      color: var(--warn);
-      background: #fff5ef;
-      padding: 4px 8px;
-      font-size: 0.73rem;
+      color: var(--accent-dark);
+      font: inherit;
       font-weight: 800;
+      cursor: pointer;
+      padding: 0 14px;
+      min-height: 48px;
       white-space: nowrap;
     }
 
-    .file {
-      color: var(--muted);
-      font-size: 0.86rem;
-      overflow-wrap: anywhere;
+    button:hover {
+      background: #edf5f2;
     }
 
-    .notice {
-      border: 1px solid #f0d0bd;
-      border-radius: 8px;
-      background: #fff8f3;
-      color: #703515;
-      padding: 12px;
-      font-size: 0.9rem;
-      line-height: 1.45;
+    .secondary {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .small {
+      font-size: 0.88rem;
     }
 
     .toast {
       position: fixed;
       left: 50%;
       bottom: 18px;
-      transform: translateX(-50%) translateY(20px);
+      transform: translateX(-50%) translateY(14px);
       opacity: 0;
       pointer-events: none;
-      background: #17201c;
+      background: #16201d;
       color: #ffffff;
       border-radius: 8px;
       padding: 10px 14px;
-      box-shadow: 0 12px 30px rgba(23, 32, 28, 0.22);
-      transition: 180ms ease;
-      font-weight: 700;
-      font-size: 0.88rem;
+      font-weight: 800;
+      transition: 160ms ease;
     }
 
     .toast.show {
@@ -357,217 +187,94 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (max-width: 880px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     @media (max-width: 620px) {
-      .wrap {
-        width: min(100% - 22px, 1120px);
+      main {
+        padding: 20px 0;
       }
 
-      .topbar,
-      .panel-head,
-      .video-title {
-        align-items: flex-start;
-        flex-direction: column;
+      .top {
+        display: grid;
       }
 
-      .link-row {
+      .upload,
+      .result,
+      button {
+        width: 100%;
+      }
+
+      .result {
         grid-template-columns: 1fr;
-      }
-
-      .actions button,
-      .actions .button-link {
-        flex: 1 1 150px;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap topbar">
-      <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
+  <main>
+    <section class="panel">
+      <div class="top">
         <div>
-          <h1>Pure Video Host</h1>
-          <p class="subtle">Native video playback for clean Genially embeds.</p>
+          <h1>VideoCenter</h1>
+          <p>Upload an MP4, type its filename, copy the HTTPS link.</p>
+        </div>
+        <a class="upload" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload video</a>
+      </div>
+
+      <label>
+        Video filename
+        <input id="filename" value="your-video.mp4" autocomplete="off" spellcheck="false">
+      </label>
+
+      <div class="result">
+        <div class="url"><span id="directUrl"></span></div>
+        <button id="copyDirect" type="button">Copy link</button>
+      </div>
+
+      <div class="secondary">
+        <p class="small">Optional clean player page for Genially embed:</p>
+        <div class="result">
+          <div class="url"><span id="playerUrl"></span></div>
+          <button id="copyPlayer" type="button">Copy player</button>
         </div>
       </div>
-      <a class="button-link primary" href="player.html?v=videos/your-video.mp4">Open player</a>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <div class="grid">
-      <section class="panel" aria-labelledby="builder-title">
-        <div class="panel-head">
-          <div>
-            <h2 id="builder-title">Link Builder</h2>
-            <p class="subtle">Generate direct video URLs, player URLs, and iframe code.</p>
-          </div>
-        </div>
-        <div class="panel-body stack">
-          <label>
-            Published site URL
-            <input id="siteBase" type="url" autocomplete="off" spellcheck="false">
-          </label>
-
-          <label>
-            Video file or URL
-            <input id="videoFile" type="text" value="videos/your-video.mp4" autocomplete="off" spellcheck="false">
-          </label>
-
-          <label>
-            Video title
-            <input id="videoTitle" type="text" value="My video" autocomplete="off" spellcheck="false">
-          </label>
-
-          <label>
-            Poster image file or URL
-            <input id="posterFile" type="text" placeholder="videos/cover.jpg" autocomplete="off" spellcheck="false">
-          </label>
-
-          <div class="toggles" aria-label="Playback options">
-            <label class="check"><input id="autoplay" type="checkbox"> Autoplay</label>
-            <label class="check"><input id="muted" type="checkbox"> Muted</label>
-            <label class="check"><input id="loop" type="checkbox"> Loop</label>
-          </div>
-
-          <div class="actions">
-            <button class="primary" type="button" id="copyDirect">Copy direct URL</button>
-            <button type="button" id="copyPlayer">Copy player URL</button>
-            <button type="button" id="copyIframe">Copy iframe</button>
-          </div>
-
-          <div class="output" aria-live="polite">
-            <div class="link-row">
-              <div class="link-label">Direct</div>
-              <div class="link-box" id="directOut"></div>
-              <button type="button" data-copy="direct">Copy</button>
-            </div>
-            <div class="link-row">
-              <div class="link-label">Player</div>
-              <div class="link-box" id="playerOut"></div>
-              <button type="button" data-copy="player">Copy</button>
-            </div>
-            <div class="link-row">
-              <div class="link-label">Iframe</div>
-              <div class="link-box" id="iframeOut"></div>
-              <button type="button" data-copy="iframe">Copy</button>
-            </div>
-          </div>
-
-          <div class="preview" title="Player preview">
-            <iframe id="previewFrame" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="library-title">
-        <div class="panel-head">
-          <div>
-            <h2 id="library-title">Video Library</h2>
-            <p class="subtle">Loaded from videos.json.</p>
-          </div>
-          <button type="button" id="reloadVideos">Reload</button>
-        </div>
-        <div class="panel-body">
-          <div class="notice">
-            Keep videos public and use simple filenames such as lesson-01.mp4.
-          </div>
-          <div id="library" class="library" style="margin-top: 14px;"></div>
-        </div>
-      </section>
-    </div>
+    </section>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
 
   <script>
-    const siteBase = document.querySelector("#siteBase");
-    const videoFile = document.querySelector("#videoFile");
-    const videoTitle = document.querySelector("#videoTitle");
-    const posterFile = document.querySelector("#posterFile");
-    const autoplay = document.querySelector("#autoplay");
-    const muted = document.querySelector("#muted");
-    const loop = document.querySelector("#loop");
-    const directOut = document.querySelector("#directOut");
-    const playerOut = document.querySelector("#playerOut");
-    const iframeOut = document.querySelector("#iframeOut");
-    const previewFrame = document.querySelector("#previewFrame");
-    const library = document.querySelector("#library");
+    const base = "https://legoretro.github.io/VideoCenter/";
+    const filename = document.querySelector("#filename");
+    const directUrl = document.querySelector("#directUrl");
+    const playerUrl = document.querySelector("#playerUrl");
     const toast = document.querySelector("#toast");
 
-    const isWeb = location.protocol === "http:" || location.protocol === "https:";
-    siteBase.value = isWeb ? new URL(".", location.href).href : "https://YOUR-USER.github.io/YOUR-REPO/";
-
-    function cleanBase() {
-      const raw = siteBase.value.trim();
-      try {
-        const url = new URL(raw);
-        return raw.endsWith("/") ? url.href : url.href + "/";
-      } catch {
-        return "https://YOUR-USER.github.io/YOUR-REPO/";
-      }
+    function cleanFilename(value) {
+      const trimmed = value.trim().replace(/^\/+/, "");
+      if (!trimmed) return "your-video.mp4";
+      return trimmed.startsWith("videos/") ? trimmed.slice(7) : trimmed;
     }
 
-    function normalizedPath(value) {
-      const raw = value.trim();
-      if (/^https?:\/\//i.test(raw)) return raw;
-      const withoutSlash = raw.replace(/^\/+/, "");
-      if (!withoutSlash) return "videos/your-video.mp4";
-      return withoutSlash.includes("/") ? withoutSlash : "videos/" + withoutSlash;
-    }
-
-    function absoluteUrl(value) {
-      const path = normalizedPath(value);
-      if (/^https?:\/\//i.test(path)) return path;
-      return new URL(path, cleanBase()).href;
-    }
-
-    function playerUrlFor(videoValue, options = {}) {
-      const params = new URLSearchParams();
-      params.set("v", normalizedPath(videoValue));
-      const title = options.title ?? videoTitle.value.trim();
-      const poster = options.poster ?? posterFile.value.trim();
-      if (title) params.set("title", title);
-      if (poster) params.set("poster", normalizedPath(poster));
-      if (options.autoplay ?? autoplay.checked) params.set("autoplay", "1");
-      if (options.muted ?? muted.checked) params.set("muted", "1");
-      if (options.loop ?? loop.checked) params.set("loop", "1");
-      return new URL("player.html", cleanBase()).href + "?" + params.toString();
-    }
-
-    function iframeFor(url) {
-      return '<iframe src="' + url + '" style="width:100%;aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
-    }
-
-    function currentLinks() {
-      const player = playerUrlFor(videoFile.value);
+    function urls() {
+      const file = cleanFilename(filename.value);
+      const direct = base + "videos/" + encodeURI(file);
       return {
-        direct: absoluteUrl(videoFile.value),
-        player,
-        iframe: iframeFor(player)
+        direct,
+        player: base + "player.html?v=" + encodeURIComponent("videos/" + file)
       };
     }
 
-    function renderLinks() {
-      const links = currentLinks();
-      directOut.textContent = links.direct;
-      playerOut.textContent = links.player;
-      iframeOut.textContent = links.iframe;
-      previewFrame.src = links.player;
+    function render() {
+      const current = urls();
+      directUrl.textContent = current.direct;
+      playerUrl.textContent = current.player;
     }
 
-    async function copyText(text) {
+    async function copy(text) {
       try {
         await navigator.clipboard.writeText(text);
         showToast("Copied");
       } catch {
-        showToast("Select the text to copy");
+        showToast("Select the link to copy");
       }
     }
 
@@ -575,106 +282,13 @@
       toast.textContent = message;
       toast.classList.add("show");
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1500);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
     }
 
-    function fillBuilder(video) {
-      videoFile.value = video.file || video.src || "";
-      videoTitle.value = video.title || "";
-      posterFile.value = video.poster || "";
-      autoplay.checked = Boolean(video.autoplay);
-      muted.checked = Boolean(video.muted);
-      loop.checked = Boolean(video.loop);
-      renderLinks();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function renderLibrary(videos) {
-      library.innerHTML = "";
-      if (!Array.isArray(videos) || videos.length === 0) {
-        const empty = document.createElement("p");
-        empty.className = "subtle";
-        empty.textContent = "No videos listed yet.";
-        library.append(empty);
-        return;
-      }
-
-      videos.forEach((video) => {
-        const item = document.createElement("article");
-        item.className = "video-item";
-
-        const titleRow = document.createElement("div");
-        titleRow.className = "video-title";
-
-        const title = document.createElement("h3");
-        title.textContent = video.title || "Untitled video";
-
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = (video.file || video.src || "").split(".").pop()?.toUpperCase() || "VIDEO";
-
-        titleRow.append(title, badge);
-
-        const file = document.createElement("div");
-        file.className = "file";
-        file.textContent = video.file || video.src || "";
-
-        const player = playerUrlFor(video.file || video.src || "", video);
-        const actions = document.createElement("div");
-        actions.className = "actions";
-
-        const use = document.createElement("button");
-        use.type = "button";
-        use.textContent = "Use";
-        use.addEventListener("click", () => fillBuilder(video));
-
-        const play = document.createElement("a");
-        play.className = "button-link primary";
-        play.href = player;
-        play.target = "_blank";
-        play.rel = "noopener";
-        play.textContent = "Play";
-
-        const copyDirect = document.createElement("button");
-        copyDirect.type = "button";
-        copyDirect.textContent = "Copy direct";
-        copyDirect.addEventListener("click", () => copyText(absoluteUrl(video.file || video.src || "")));
-
-        const copyPlayer = document.createElement("button");
-        copyPlayer.type = "button";
-        copyPlayer.textContent = "Copy player";
-        copyPlayer.addEventListener("click", () => copyText(player));
-
-        actions.append(use, play, copyDirect, copyPlayer);
-        item.append(titleRow, file, actions);
-        library.append(item);
-      });
-    }
-
-    async function loadVideos() {
-      try {
-        const response = await fetch("videos.json", { cache: "no-store" });
-        if (!response.ok) throw new Error("videos.json not found");
-        renderLibrary(await response.json());
-      } catch {
-        renderLibrary([]);
-      }
-    }
-
-    document.querySelector("#copyDirect").addEventListener("click", () => copyText(currentLinks().direct));
-    document.querySelector("#copyPlayer").addEventListener("click", () => copyText(currentLinks().player));
-    document.querySelector("#copyIframe").addEventListener("click", () => copyText(currentLinks().iframe));
-    document.querySelector("#reloadVideos").addEventListener("click", loadVideos);
-    document.querySelectorAll("[data-copy]").forEach((button) => {
-      button.addEventListener("click", () => copyText(currentLinks()[button.dataset.copy]));
-    });
-    [siteBase, videoFile, videoTitle, posterFile, autoplay, muted, loop].forEach((input) => {
-      input.addEventListener("input", renderLinks);
-      input.addEventListener("change", renderLinks);
-    });
-
-    renderLinks();
-    loadVideos();
+    filename.addEventListener("input", render);
+    document.querySelector("#copyDirect").addEventListener("click", () => copy(urls().direct));
+    document.querySelector("#copyPlayer").addEventListener("click", () => copy(urls().player));
+    render();
   </script>
 </body>
 </html>
