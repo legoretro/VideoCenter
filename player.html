@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pure Video</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #000000;
+      color: #ffffff;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    video {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: #000000;
+      object-fit: contain;
+    }
+
+    .message {
+      min-height: 100vh;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      background: #000000;
+    }
+
+    .message.show {
+      display: grid;
+    }
+
+    .message p {
+      max-width: 520px;
+      margin: 0;
+      color: #d9e2dc;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" controls playsinline preload="metadata" controlslist="nodownload">
+    <source id="source">
+  </video>
+  <div class="message" id="message">
+    <p id="messageText">No video URL provided.</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const video = document.querySelector("#video");
+    const source = document.querySelector("#source");
+    const message = document.querySelector("#message");
+    const messageText = document.querySelector("#messageText");
+    const videoValue = params.get("v") || params.get("src") || params.get("video");
+    const title = params.get("title") || "Pure Video";
+    const poster = params.get("poster");
+    const shouldAutoplay = params.get("autoplay") === "1";
+    const shouldMute = params.get("muted") === "1" || shouldAutoplay;
+    const shouldLoop = params.get("loop") === "1";
+
+    function mimeFor(url) {
+      const clean = url.split("?")[0].toLowerCase();
+      if (clean.endsWith(".webm")) return "video/webm";
+      if (clean.endsWith(".ogv") || clean.endsWith(".ogg")) return "video/ogg";
+      if (clean.endsWith(".m4v")) return "video/mp4";
+      return "video/mp4";
+    }
+
+    function resolveUrl(value) {
+      return new URL(value, location.href).href;
+    }
+
+    function showMessage(text) {
+      video.style.display = "none";
+      messageText.textContent = text;
+      message.classList.add("show");
+    }
+
+    if (!videoValue) {
+      showMessage("No video URL provided.");
+    } else {
+      document.title = title;
+      source.src = resolveUrl(videoValue);
+      source.type = mimeFor(videoValue);
+      if (poster) video.poster = resolveUrl(poster);
+      video.autoplay = shouldAutoplay;
+      video.muted = shouldMute;
+      video.loop = shouldLoop;
+      video.load();
+
+      if (shouldAutoplay) {
+        video.play().catch(() => {
+          video.controls = true;
+        });
+      }
+    }
+
+    video.addEventListener("error", () => {
+      showMessage("The video could not be loaded. Check the URL and file type.");
+    });
+  </script>
+</body>
+</html>

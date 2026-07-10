@@ -1,0 +1,10 @@
+[
+  {
+    "title": "Replace with your video title",
+    "file": "videos/your-video.mp4",
+    "poster": "",
+    "autoplay": false,
+    "muted": false,
+    "loop": false
+  }
+]
