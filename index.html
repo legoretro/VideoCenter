@@ -144,6 +144,14 @@
       gap: 10px;
     }
 
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 7px;
+      color: var(--muted);
+      padding: 14px;
+      line-height: 1.4;
+    }
+
     .result {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -223,16 +231,14 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Upload MP4s, paste filenames, copy HTTPS links.</p>
+          <p>Upload videos, paste exact filenames one per line, copy HTTPS links.</p>
         </div>
         <a class="upload" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
       </div>
 
       <label>
         Video filenames
-        <textarea id="filenames" spellcheck="false">video-1.mp4
-video-2.mp4
-video-3.mp4</textarea>
+        <textarea id="filenames" spellcheck="false" placeholder="Video_HLA_Genotype_Matches.mov&#10;another-video.mp4&#10;third-video.mp4"></textarea>
       </label>
 
       <div class="toolbar">
@@ -281,6 +287,14 @@ video-3.mp4</textarea>
     function render() {
       const currentLinks = links();
       results.innerHTML = "";
+
+      if (currentLinks.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Paste exact uploaded filenames here, one per line.";
+        results.append(empty);
+        return;
+      }
 
       currentLinks.forEach((link) => {
         const row = document.createElement("div");
