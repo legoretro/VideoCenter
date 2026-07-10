@@ -12,6 +12,7 @@
       --line: #d7dfdc;
       --paper: #f4f7f2;
       --panel: #ffffff;
+      --soft: #edf5f2;
       --accent: #0d766f;
       --accent-dark: #095a55;
       --focus: rgba(13, 118, 111, 0.18);
@@ -30,9 +31,9 @@
     }
 
     main {
-      width: min(820px, calc(100% - 28px));
+      width: min(980px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 44px 0;
+      padding: 34px 0;
     }
 
     .panel {
@@ -51,6 +52,7 @@
     }
 
     h1,
+    h2,
     p {
       margin: 0;
     }
@@ -61,90 +63,64 @@
       letter-spacing: 0;
     }
 
+    h2 {
+      font-size: 1.05rem;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+    }
+
     p {
       color: var(--muted);
       line-height: 1.45;
       margin-top: 7px;
     }
 
-    .upload {
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
       flex: 0 0 auto;
+    }
+
+    a.button,
+    button {
+      appearance: none;
       min-height: 44px;
-      padding: 0 16px;
+      border: 1px solid var(--accent);
       border-radius: 7px;
-      background: var(--accent);
-      color: #ffffff;
-      text-decoration: none;
+      padding: 0 14px;
+      background: #ffffff;
+      color: var(--accent-dark);
+      font: inherit;
       font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
     }
 
-    .upload:hover {
-      background: var(--accent-dark);
-    }
-
-    label {
-      display: grid;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-weight: 750;
-      margin-bottom: 14px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      resize: vertical;
-      padding: 12px 13px;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      color: var(--ink);
-      background: #ffffff;
-      font: inherit;
-      line-height: 1.45;
-      outline: none;
-    }
-
-    textarea:focus {
+    a.button.primary,
+    button.primary {
       border-color: var(--accent);
-      box-shadow: 0 0 0 4px var(--focus);
+      background: var(--accent);
+      color: #ffffff;
     }
 
-    .toolbar {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    button {
-      appearance: none;
-      border: 1px solid var(--accent);
-      border-radius: 7px;
-      background: #ffffff;
-      color: var(--accent-dark);
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      padding: 0 14px;
-      min-height: 44px;
-      white-space: nowrap;
-    }
-
+    a.button:hover,
     button:hover {
-      background: #edf5f2;
+      background: var(--soft);
     }
 
-    .results {
-      display: grid;
-      gap: 10px;
+    a.button.primary:hover,
+    button.primary:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
     }
 
-    .empty {
+    .status {
       border: 1px dashed var(--line);
       border-radius: 7px;
       color: var(--muted);
@@ -152,30 +128,59 @@
       line-height: 1.4;
     }
 
-    .result {
+    .video-list {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .video-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.4fr) auto auto;
       gap: 10px;
       align-items: stretch;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .name,
+    .url {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .name {
+      color: var(--ink);
+      font-weight: 800;
+      overflow-wrap: anywhere;
     }
 
     .url {
-      min-height: 46px;
       border: 1px solid var(--line);
       border-radius: 7px;
-      background: #edf5f2;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      overflow: hidden;
+      background: var(--soft);
       color: #24302d;
-      font-size: 0.94rem;
+      padding: 0 12px;
+      font-size: 0.93rem;
     }
 
     .url span {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .note {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
     }
 
     .toast {
@@ -198,29 +203,22 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (max-width: 620px) {
-      main {
-        padding: 20px 0;
-      }
-
+    @media (max-width: 780px) {
       .top {
         display: grid;
       }
 
-      .upload,
-      .result,
-      .toolbar,
+      .actions {
+        justify-content: stretch;
+      }
+
+      a.button,
       button {
         width: 100%;
       }
 
-      .toolbar,
-      .result {
+      .video-row {
         grid-template-columns: 1fr;
-      }
-
-      .toolbar {
-        display: grid;
       }
     }
   </style>
@@ -231,21 +229,23 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Upload videos, paste exact filenames one per line, copy HTTPS links.</p>
+          <p>Open this page anywhere, copy the video link you need.</p>
         </div>
-        <a class="upload" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
+          <button id="refresh" type="button">Refresh list</button>
+          <button id="copyAll" type="button">Copy all</button>
+        </div>
       </div>
 
-      <label>
-        Video filenames
-        <textarea id="filenames" spellcheck="false" placeholder="Video_HLA_Genotype_Matches.mov&#10;another-video.mp4&#10;third-video.mp4"></textarea>
-      </label>
-
-      <div class="toolbar">
-        <button id="copyAll" type="button">Copy all links</button>
+      <h2>My Videos</h2>
+      <div id="videoList" class="video-list" aria-live="polite">
+        <div class="status">Loading videos...</div>
       </div>
 
-      <div class="results" id="results" aria-live="polite"></div>
+      <div class="note">
+        Direct link pattern: https://legoretro.github.io/VideoCenter/videos/EXACT-FILENAME
+      </div>
     </section>
   </main>
 
@@ -253,68 +253,85 @@
 
   <script>
     const base = "https://legoretro.github.io/VideoCenter/";
-    const filenames = document.querySelector("#filenames");
-    const results = document.querySelector("#results");
+    const api = "https://api.github.com/repos/legoretro/VideoCenter/contents/videos?ref=main";
+    const videoList = document.querySelector("#videoList");
     const toast = document.querySelector("#toast");
-
-    function cleanFilename(value) {
-      let file = value.trim();
-      file = file.replace(/^https:\/\/legoretro\.github\.io\/VideoCenter\/videos\//i, "");
-      file = file.replace(/^\/+/, "");
-      file = file.startsWith("videos/") ? file.slice(7) : file;
-      return file;
-    }
+    let currentLinks = [];
 
     function encodePath(file) {
       return file.split("/").map((part) => encodeURIComponent(part)).join("/");
     }
 
-    function links() {
-      const seen = new Set();
-      return filenames.value
-        .split(/\r?\n/)
-        .map(cleanFilename)
-        .filter(Boolean)
-        .filter((file) => {
-          const key = file.toLowerCase();
-          if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
-        })
-        .map((file) => base + "videos/" + encodePath(file));
+    function isVideo(name) {
+      return /\.(mp4|mov|webm|m4v|ogv|ogg)$/i.test(name);
     }
 
-    function render() {
-      const currentLinks = links();
-      results.innerHTML = "";
+    function videoUrl(name) {
+      return base + "videos/" + encodePath(name);
+    }
 
-      if (currentLinks.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Paste exact uploaded filenames here, one per line.";
-        results.append(empty);
+    function status(text) {
+      videoList.innerHTML = "";
+      const box = document.createElement("div");
+      box.className = "status";
+      box.textContent = text;
+      videoList.append(box);
+    }
+
+    function render(files) {
+      videoList.innerHTML = "";
+      currentLinks = files.map((file) => videoUrl(file.name));
+
+      if (files.length === 0) {
+        status("No videos uploaded yet. Use Upload videos, then refresh this page.");
         return;
       }
 
-      currentLinks.forEach((link) => {
+      files.forEach((file) => {
+        const link = videoUrl(file.name);
         const row = document.createElement("div");
-        row.className = "result";
+        row.className = "video-row";
 
-        const box = document.createElement("div");
-        box.className = "url";
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = file.name;
 
-        const text = document.createElement("span");
-        text.textContent = link;
-        box.append(text);
+        const url = document.createElement("div");
+        url.className = "url";
+        const urlText = document.createElement("span");
+        urlText.textContent = link;
+        url.append(urlText);
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = "Copy";
-        button.addEventListener("click", () => copy(link));
+        const copyButton = document.createElement("button");
+        copyButton.type = "button";
+        copyButton.textContent = "Copy";
+        copyButton.addEventListener("click", () => copy(link));
 
-        row.append(box, button);
-        results.append(row);
+        const openButton = document.createElement("a");
+        openButton.className = "button";
+        openButton.href = link;
+        openButton.target = "_blank";
+        openButton.rel = "noopener";
+        openButton.textContent = "Open";
+
+        row.append(name, url, copyButton, openButton);
+        videoList.append(row);
       });
+    }
+
+    async function loadVideos() {
+      status("Loading videos...");
+      try {
+        const response = await fetch(api, { cache: "no-store" });
+        if (!response.ok) throw new Error("Could not load videos");
+        const items = await response.json();
+        const files = items
+          .filter((item) => item.type === "file" && isVideo(item.name))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        render(files);
+      } catch {
+        status("Could not load the video list. Use the direct pattern below with the exact filename.");
+      }
     }
 
     async function copy(text) {
@@ -333,9 +350,16 @@
       showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
     }
 
-    filenames.addEventListener("input", render);
-    document.querySelector("#copyAll").addEventListener("click", () => copy(links().join("\n")));
-    render();
+    document.querySelector("#refresh").addEventListener("click", loadVideos);
+    document.querySelector("#copyAll").addEventListener("click", () => {
+      if (currentLinks.length === 0) {
+        showToast("No links yet");
+        return;
+      }
+      copy(currentLinks.join("\n"));
+    });
+
+    loadVideos();
   </script>
 </body>
 </html>
