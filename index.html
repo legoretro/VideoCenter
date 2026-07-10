@@ -30,7 +30,7 @@
     }
 
     main {
-      width: min(760px, calc(100% - 28px));
+      width: min(820px, calc(100% - 28px));
       margin: 0 auto;
       padding: 44px 0;
     }
@@ -92,24 +92,56 @@
       color: var(--muted);
       font-size: 0.86rem;
       font-weight: 750;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    input {
+    textarea {
       width: 100%;
-      min-height: 46px;
-      padding: 0 13px;
+      min-height: 150px;
+      resize: vertical;
+      padding: 12px 13px;
       border: 1px solid var(--line);
       border-radius: 7px;
       color: var(--ink);
       background: #ffffff;
       font: inherit;
+      line-height: 1.45;
       outline: none;
     }
 
-    input:focus {
+    textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--accent);
+      border-radius: 7px;
+      background: #ffffff;
+      color: var(--accent-dark);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0 14px;
+      min-height: 44px;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: #edf5f2;
+    }
+
+    .results {
+      display: grid;
+      gap: 10px;
     }
 
     .result {
@@ -117,11 +149,10 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
       align-items: stretch;
-      margin-top: 12px;
     }
 
     .url {
-      min-height: 48px;
+      min-height: 46px;
       border: 1px solid var(--line);
       border-radius: 7px;
       background: #edf5f2;
@@ -137,34 +168,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    button {
-      appearance: none;
-      border: 1px solid var(--accent);
-      border-radius: 7px;
-      background: #ffffff;
-      color: var(--accent-dark);
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      padding: 0 14px;
-      min-height: 48px;
-      white-space: nowrap;
-    }
-
-    button:hover {
-      background: #edf5f2;
-    }
-
-    .secondary {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-    }
-
-    .small {
-      font-size: 0.88rem;
     }
 
     .toast {
@@ -198,12 +201,18 @@
 
       .upload,
       .result,
+      .toolbar,
       button {
         width: 100%;
       }
 
+      .toolbar,
       .result {
         grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        display: grid;
       }
     }
   </style>
@@ -214,28 +223,23 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Upload an MP4, type its filename, copy the HTTPS link.</p>
+          <p>Upload MP4s, paste filenames, copy HTTPS links.</p>
         </div>
-        <a class="upload" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload video</a>
+        <a class="upload" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
       </div>
 
       <label>
-        Video filename
-        <input id="filename" value="your-video.mp4" autocomplete="off" spellcheck="false">
+        Video filenames
+        <textarea id="filenames" spellcheck="false">video-1.mp4
+video-2.mp4
+video-3.mp4</textarea>
       </label>
 
-      <div class="result">
-        <div class="url"><span id="directUrl"></span></div>
-        <button id="copyDirect" type="button">Copy link</button>
+      <div class="toolbar">
+        <button id="copyAll" type="button">Copy all links</button>
       </div>
 
-      <div class="secondary">
-        <p class="small">Optional clean player page for Genially embed:</p>
-        <div class="result">
-          <div class="url"><span id="playerUrl"></span></div>
-          <button id="copyPlayer" type="button">Copy player</button>
-        </div>
-      </div>
+      <div class="results" id="results" aria-live="polite"></div>
     </section>
   </main>
 
@@ -243,30 +247,60 @@
 
   <script>
     const base = "https://legoretro.github.io/VideoCenter/";
-    const filename = document.querySelector("#filename");
-    const directUrl = document.querySelector("#directUrl");
-    const playerUrl = document.querySelector("#playerUrl");
+    const filenames = document.querySelector("#filenames");
+    const results = document.querySelector("#results");
     const toast = document.querySelector("#toast");
 
     function cleanFilename(value) {
-      const trimmed = value.trim().replace(/^\/+/, "");
-      if (!trimmed) return "your-video.mp4";
-      return trimmed.startsWith("videos/") ? trimmed.slice(7) : trimmed;
+      let file = value.trim();
+      file = file.replace(/^https:\/\/legoretro\.github\.io\/VideoCenter\/videos\//i, "");
+      file = file.replace(/^\/+/, "");
+      file = file.startsWith("videos/") ? file.slice(7) : file;
+      return file;
     }
 
-    function urls() {
-      const file = cleanFilename(filename.value);
-      const direct = base + "videos/" + encodeURI(file);
-      return {
-        direct,
-        player: base + "player.html?v=" + encodeURIComponent("videos/" + file)
-      };
+    function encodePath(file) {
+      return file.split("/").map((part) => encodeURIComponent(part)).join("/");
+    }
+
+    function links() {
+      const seen = new Set();
+      return filenames.value
+        .split(/\r?\n/)
+        .map(cleanFilename)
+        .filter(Boolean)
+        .filter((file) => {
+          const key = file.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .map((file) => base + "videos/" + encodePath(file));
     }
 
     function render() {
-      const current = urls();
-      directUrl.textContent = current.direct;
-      playerUrl.textContent = current.player;
+      const currentLinks = links();
+      results.innerHTML = "";
+
+      currentLinks.forEach((link) => {
+        const row = document.createElement("div");
+        row.className = "result";
+
+        const box = document.createElement("div");
+        box.className = "url";
+
+        const text = document.createElement("span");
+        text.textContent = link;
+        box.append(text);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Copy";
+        button.addEventListener("click", () => copy(link));
+
+        row.append(box, button);
+        results.append(row);
+      });
     }
 
     async function copy(text) {
@@ -285,9 +319,8 @@
       showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
     }
 
-    filename.addEventListener("input", render);
-    document.querySelector("#copyDirect").addEventListener("click", () => copy(urls().direct));
-    document.querySelector("#copyPlayer").addEventListener("click", () => copy(urls().player));
+    filenames.addEventListener("input", render);
+    document.querySelector("#copyAll").addEventListener("click", () => copy(links().join("\n")));
     render();
   </script>
 </body>

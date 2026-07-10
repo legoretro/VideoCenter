@@ -2,28 +2,24 @@
 
 Static GitHub Pages video hosting. No Supabase, no database, no YouTube ads.
 
-Open the site:
+Open the helper page:
 
 ```text
 https://legoretro.github.io/VideoCenter/
 ```
 
-Upload videos here:
+Upload one or many videos here:
 
 ```text
 https://github.com/legoretro/VideoCenter/upload/main/videos
 ```
 
-After upload, the direct HTTPS link is:
+After upload, each direct HTTPS link is:
 
 ```text
 https://legoretro.github.io/VideoCenter/videos/YOUR-FILENAME.mp4
 ```
 
-Optional clean player link:
-
-```text
-https://legoretro.github.io/VideoCenter/player.html?v=videos/YOUR-FILENAME.mp4
-```
+For multiple videos, paste all filenames into the helper page, one per line.
 
 Use `.mp4` with H.264 video and AAC audio for best browser support.
