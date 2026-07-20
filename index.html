@@ -135,7 +135,7 @@
 
     .video-row {
       display: grid;
-      grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1.15fr) auto auto auto auto;
+      grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1.15fr) auto auto auto;
       gap: 10px;
       align-items: stretch;
       border: 1px solid var(--line);
@@ -229,12 +229,12 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Open this page anywhere, copy the video or Genially embed you need.</p>
+          <p>Open this page anywhere, copy a clean player link or Genially embed.</p>
         </div>
         <div class="actions">
           <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
           <button id="refresh" type="button">Refresh list</button>
-          <button id="copyAll" type="button">Copy all URLs</button>
+          <button id="copyAll" type="button">Copy all player links</button>
           <button id="copyAllEmbeds" type="button">Copy all embeds</button>
         </div>
       </div>
@@ -245,7 +245,7 @@
       </div>
 
       <div class="note">
-        For Genially, use Copy embed code if adding the plain URL shows null.
+        For Genially, use Embed code if adding a plain video URL shows null.
       </div>
     </section>
   </main>
@@ -268,16 +268,23 @@
       return /\.(mp4|mov|webm|m4v|ogv|ogg)$/i.test(name);
     }
 
-    function videoUrl(name) {
+    function pageVideoUrl(name) {
       return base + "videos/" + encodePath(name);
     }
 
-    function playerUrl(name) {
-      return base + "player.html?v=" + encodeURIComponent("videos/" + name);
+    function sourceUrl(file) {
+      return file.download_url || pageVideoUrl(file.name);
     }
 
-    function embedCode(name) {
-      return '<iframe src="' + playerUrl(name) + '" style="width:100%;aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+    function playerUrl(file) {
+      const params = new URLSearchParams();
+      params.set("v", sourceUrl(file));
+      params.set("title", file.name);
+      return base + "player.html?" + params.toString();
+    }
+
+    function embedCode(file) {
+      return '<iframe src="' + playerUrl(file) + '" style="width:100%;aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
     }
 
     function status(text) {
@@ -290,8 +297,8 @@
 
     function render(files) {
       videoList.innerHTML = "";
-      currentLinks = files.map((file) => videoUrl(file.name));
-      currentEmbeds = files.map((file) => embedCode(file.name));
+      currentLinks = files.map((file) => playerUrl(file));
+      currentEmbeds = files.map((file) => embedCode(file));
 
       if (files.length === 0) {
         status("No videos uploaded yet. Use Upload videos, then refresh this page.");
@@ -299,9 +306,9 @@
       }
 
       files.forEach((file) => {
-        const link = videoUrl(file.name);
-        const player = playerUrl(file.name);
-        const embed = embedCode(file.name);
+        const source = sourceUrl(file);
+        const player = playerUrl(file);
+        const embed = embedCode(file);
         const row = document.createElement("div");
         row.className = "video-row";
 
@@ -312,18 +319,18 @@
         const url = document.createElement("div");
         url.className = "url";
         const urlText = document.createElement("span");
-        urlText.textContent = link;
+        urlText.textContent = player;
         url.append(urlText);
 
         const copyButton = document.createElement("button");
         copyButton.type = "button";
-        copyButton.textContent = "Copy URL";
-        copyButton.addEventListener("click", () => copy(link));
+        copyButton.textContent = "Copy player";
+        copyButton.addEventListener("click", () => copy(player));
 
-        const geniallyButton = document.createElement("button");
-        geniallyButton.type = "button";
-        geniallyButton.textContent = "Genially URL";
-        geniallyButton.addEventListener("click", () => copy(player));
+        const fileButton = document.createElement("button");
+        fileButton.type = "button";
+        fileButton.textContent = "Copy file";
+        fileButton.addEventListener("click", () => copy(source));
 
         const embedButton = document.createElement("button");
         embedButton.type = "button";
@@ -332,12 +339,12 @@
 
         const openButton = document.createElement("a");
         openButton.className = "button";
-        openButton.href = link;
+        openButton.href = player;
         openButton.target = "_blank";
         openButton.rel = "noopener";
-        openButton.textContent = "Open";
+        openButton.textContent = "Open player";
 
-        row.append(name, url, copyButton, geniallyButton, embedButton, openButton);
+        row.append(name, url, copyButton, fileButton, embedButton, openButton);
         videoList.append(row);
       });
     }
