@@ -31,7 +31,7 @@
     }
 
     main {
-      width: min(980px, calc(100% - 28px));
+      width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
       padding: 34px 0;
     }
@@ -135,7 +135,7 @@
 
     .video-row {
       display: grid;
-      grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.4fr) auto auto;
+      grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1.15fr) auto auto auto auto;
       gap: 10px;
       align-items: stretch;
       border: 1px solid var(--line);
@@ -229,12 +229,13 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Open this page anywhere, copy the video link you need.</p>
+          <p>Open this page anywhere, copy the video or Genially embed you need.</p>
         </div>
         <div class="actions">
           <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
           <button id="refresh" type="button">Refresh list</button>
-          <button id="copyAll" type="button">Copy all</button>
+          <button id="copyAll" type="button">Copy all URLs</button>
+          <button id="copyAllEmbeds" type="button">Copy all embeds</button>
         </div>
       </div>
 
@@ -244,7 +245,7 @@
       </div>
 
       <div class="note">
-        Direct link pattern: https://legoretro.github.io/VideoCenter/videos/EXACT-FILENAME
+        For Genially, use Copy embed code if adding the plain URL shows null.
       </div>
     </section>
   </main>
@@ -257,6 +258,7 @@
     const videoList = document.querySelector("#videoList");
     const toast = document.querySelector("#toast");
     let currentLinks = [];
+    let currentEmbeds = [];
 
     function encodePath(file) {
       return file.split("/").map((part) => encodeURIComponent(part)).join("/");
@@ -270,6 +272,14 @@
       return base + "videos/" + encodePath(name);
     }
 
+    function playerUrl(name) {
+      return base + "player.html?v=" + encodeURIComponent("videos/" + name);
+    }
+
+    function embedCode(name) {
+      return '<iframe src="' + playerUrl(name) + '" style="width:100%;aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+    }
+
     function status(text) {
       videoList.innerHTML = "";
       const box = document.createElement("div");
@@ -281,6 +291,7 @@
     function render(files) {
       videoList.innerHTML = "";
       currentLinks = files.map((file) => videoUrl(file.name));
+      currentEmbeds = files.map((file) => embedCode(file.name));
 
       if (files.length === 0) {
         status("No videos uploaded yet. Use Upload videos, then refresh this page.");
@@ -289,6 +300,8 @@
 
       files.forEach((file) => {
         const link = videoUrl(file.name);
+        const player = playerUrl(file.name);
+        const embed = embedCode(file.name);
         const row = document.createElement("div");
         row.className = "video-row";
 
@@ -304,8 +317,18 @@
 
         const copyButton = document.createElement("button");
         copyButton.type = "button";
-        copyButton.textContent = "Copy";
+        copyButton.textContent = "Copy URL";
         copyButton.addEventListener("click", () => copy(link));
+
+        const geniallyButton = document.createElement("button");
+        geniallyButton.type = "button";
+        geniallyButton.textContent = "Genially URL";
+        geniallyButton.addEventListener("click", () => copy(player));
+
+        const embedButton = document.createElement("button");
+        embedButton.type = "button";
+        embedButton.textContent = "Embed code";
+        embedButton.addEventListener("click", () => copy(embed));
 
         const openButton = document.createElement("a");
         openButton.className = "button";
@@ -314,7 +337,7 @@
         openButton.rel = "noopener";
         openButton.textContent = "Open";
 
-        row.append(name, url, copyButton, openButton);
+        row.append(name, url, copyButton, geniallyButton, embedButton, openButton);
         videoList.append(row);
       });
     }
@@ -357,6 +380,13 @@
         return;
       }
       copy(currentLinks.join("\n"));
+    });
+    document.querySelector("#copyAllEmbeds").addEventListener("click", () => {
+      if (currentEmbeds.length === 0) {
+        showToast("No embeds yet");
+        return;
+      }
+      copy(currentEmbeds.join("\n\n"));
     });
 
     loadVideos();
