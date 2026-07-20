@@ -231,13 +231,13 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Open anywhere. Copy an autoplay looping banner or Genially embed.</p>
+          <p>Open anywhere. Copy a looping Genially banner embed.</p>
         </div>
         <div class="actions">
           <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload</a>
           <a class="button" href="https://github.com/legoretro/VideoCenter/tree/main/videos">Manage files</a>
           <button id="refresh" type="button">Refresh</button>
-          <button id="copyAllPlayers" type="button">Copy banner URLs</button>
+          <button id="copyAllPlayers" type="button">Copy file URLs</button>
           <button id="copyAllEmbeds" type="button">Copy all embeds</button>
         </div>
       </div>
@@ -248,7 +248,7 @@
       </div>
 
       <div class="note">
-        Genially: use <strong>Embed code</strong> first for a top banner. It autoplays, loops, is muted, hides controls, and fills the banner area.
+        Genially: use <strong>Embed code</strong> for a top banner. It autoplays, loops, is muted, hides controls, fills the banner area, and avoids the 404-prone /videos link.
       </div>
     </section>
   </main>
@@ -279,15 +279,16 @@
       return file.download_url || rawFallback(file);
     }
 
-    function bannerUrl(file) {
-      const params = new URLSearchParams();
-      params.set("v", sourceUrl(file));
-      params.set("title", file.name);
-      return base + "banner.html?" + params.toString();
+    function mimeFor(name) {
+      const lower = name.toLowerCase();
+      if (lower.endsWith(".webm")) return "video/webm";
+      if (lower.endsWith(".ogv") || lower.endsWith(".ogg")) return "video/ogg";
+      if (lower.endsWith(".mov")) return "video/quicktime";
+      return "video/mp4";
     }
 
     function embedCode(file) {
-      return '<iframe src="' + bannerUrl(file) + '" style="width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+      return '<video autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;"><source src="' + sourceUrl(file) + '" type="' + mimeFor(file.name) + '"></video>';
     }
 
     function githubUrl(file) {
@@ -304,7 +305,7 @@
 
     function render(files) {
       videoList.innerHTML = "";
-      currentPlayers = files.map((file) => bannerUrl(file));
+      currentPlayers = files.map((file) => sourceUrl(file));
       currentEmbeds = files.map((file) => embedCode(file));
 
       if (files.length === 0) {
@@ -313,7 +314,6 @@
       }
 
       files.forEach((file) => {
-        const player = bannerUrl(file);
         const source = sourceUrl(file);
         const embed = embedCode(file);
         const row = document.createElement("div");
@@ -326,7 +326,7 @@
         const url = document.createElement("div");
         url.className = "url";
         const urlText = document.createElement("span");
-        urlText.textContent = player;
+        urlText.textContent = source;
         url.append(urlText);
 
         const actions = document.createElement("div");
@@ -334,8 +334,8 @@
 
         const playerButton = document.createElement("button");
         playerButton.type = "button";
-        playerButton.textContent = "Banner URL";
-        playerButton.addEventListener("click", () => copy(player));
+        playerButton.textContent = "Copy file";
+        playerButton.addEventListener("click", () => copy(source));
 
         const embedButton = document.createElement("button");
         embedButton.type = "button";
@@ -344,15 +344,15 @@
 
         const fileButton = document.createElement("button");
         fileButton.type = "button";
-        fileButton.textContent = "Copy file";
-        fileButton.addEventListener("click", () => copy(source));
+        fileButton.textContent = "Copy iframe";
+        fileButton.addEventListener("click", () => copy('<iframe srcdoc="' + embed.replaceAll("&", "&amp;").replaceAll('"', "&quot;") + '" style="width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'));
 
         const openButton = document.createElement("a");
         openButton.className = "button";
-        openButton.href = player;
+        openButton.href = source;
         openButton.target = "_blank";
         openButton.rel = "noopener";
-        openButton.textContent = "Open banner";
+        openButton.textContent = "Open file";
 
         const manageButton = document.createElement("a");
         manageButton.className = "button";
@@ -401,7 +401,7 @@
     document.querySelector("#refresh").addEventListener("click", loadVideos);
     document.querySelector("#copyAllPlayers").addEventListener("click", () => {
       if (currentPlayers.length === 0) {
-        showToast("No players yet");
+        showToast("No files yet");
         return;
       }
       copy(currentPlayers.join("\n"));
