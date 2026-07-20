@@ -15,7 +15,6 @@
       --soft: #edf5f2;
       --accent: #0d766f;
       --accent-dark: #095a55;
-      --focus: rgba(13, 118, 111, 0.18);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -75,11 +74,15 @@
       margin-top: 7px;
     }
 
-    .actions {
+    .actions,
+    .row-actions {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-end;
       gap: 10px;
+    }
+
+    .actions {
+      justify-content: flex-end;
       flex: 0 0 auto;
     }
 
@@ -102,8 +105,7 @@
       white-space: nowrap;
     }
 
-    a.button.primary,
-    button.primary {
+    a.button.primary {
       border-color: var(--accent);
       background: var(--accent);
       color: #ffffff;
@@ -114,8 +116,7 @@
       background: var(--soft);
     }
 
-    a.button.primary:hover,
-    button.primary:hover {
+    a.button.primary:hover {
       background: var(--accent-dark);
       border-color: var(--accent-dark);
     }
@@ -135,9 +136,9 @@
 
     .video-row {
       display: grid;
-      grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1.15fr) auto auto auto;
+      grid-template-columns: minmax(210px, 0.8fr) minmax(280px, 1fr) minmax(360px, auto);
       gap: 10px;
-      align-items: stretch;
+      align-items: center;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px;
@@ -146,9 +147,6 @@
 
     .name,
     .url {
-      min-height: 44px;
-      display: flex;
-      align-items: center;
       min-width: 0;
       overflow: hidden;
     }
@@ -160,11 +158,14 @@
     }
 
     .url {
+      min-height: 44px;
       border: 1px solid var(--line);
       border-radius: 7px;
       background: var(--soft);
       color: #24302d;
       padding: 0 12px;
+      display: flex;
+      align-items: center;
       font-size: 0.93rem;
     }
 
@@ -203,12 +204,13 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (max-width: 780px) {
+    @media (max-width: 920px) {
       .top {
         display: grid;
       }
 
-      .actions {
+      .actions,
+      .row-actions {
         justify-content: stretch;
       }
 
@@ -229,12 +231,13 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Open this page anywhere, copy a clean player link or Genially embed.</p>
+          <p>Open anywhere. Copy the Genially embed or player link. Manage files on GitHub.</p>
         </div>
         <div class="actions">
-          <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload videos</a>
-          <button id="refresh" type="button">Refresh list</button>
-          <button id="copyAll" type="button">Copy all player links</button>
+          <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload</a>
+          <a class="button" href="https://github.com/legoretro/VideoCenter/tree/main/videos">Manage files</a>
+          <button id="refresh" type="button">Refresh</button>
+          <button id="copyAllPlayers" type="button">Copy all players</button>
           <button id="copyAllEmbeds" type="button">Copy all embeds</button>
         </div>
       </div>
@@ -245,7 +248,7 @@
       </div>
 
       <div class="note">
-        For Genially, use Embed code if adding a plain video URL shows null.
+        Genially: use <strong>Embed code</strong> first. Use <strong>Copy player</strong> when Genially asks for a website URL. The player uses GitHub's raw file URL so it avoids the 404-prone direct /videos link.
       </div>
     </section>
   </main>
@@ -257,7 +260,7 @@
     const api = "https://api.github.com/repos/legoretro/VideoCenter/contents/videos?ref=main";
     const videoList = document.querySelector("#videoList");
     const toast = document.querySelector("#toast");
-    let currentLinks = [];
+    let currentPlayers = [];
     let currentEmbeds = [];
 
     function encodePath(file) {
@@ -268,12 +271,12 @@
       return /\.(mp4|mov|webm|m4v|ogv|ogg)$/i.test(name);
     }
 
-    function pageVideoUrl(name) {
-      return base + "videos/" + encodePath(name);
+    function rawFallback(file) {
+      return "https://raw.githubusercontent.com/legoretro/VideoCenter/main/" + encodePath(file.path || ("videos/" + file.name));
     }
 
     function sourceUrl(file) {
-      return file.download_url || pageVideoUrl(file.name);
+      return file.download_url || rawFallback(file);
     }
 
     function playerUrl(file) {
@@ -287,6 +290,10 @@
       return '<iframe src="' + playerUrl(file) + '" style="width:100%;aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
     }
 
+    function githubUrl(file) {
+      return file.html_url || "https://github.com/legoretro/VideoCenter/blob/main/" + encodePath(file.path || ("videos/" + file.name));
+    }
+
     function status(text) {
       videoList.innerHTML = "";
       const box = document.createElement("div");
@@ -297,17 +304,17 @@
 
     function render(files) {
       videoList.innerHTML = "";
-      currentLinks = files.map((file) => playerUrl(file));
+      currentPlayers = files.map((file) => playerUrl(file));
       currentEmbeds = files.map((file) => embedCode(file));
 
       if (files.length === 0) {
-        status("No videos uploaded yet. Use Upload videos, then refresh this page.");
+        status("No videos found yet. Upload videos, wait for GitHub to finish, then refresh.");
         return;
       }
 
       files.forEach((file) => {
-        const source = sourceUrl(file);
         const player = playerUrl(file);
+        const source = sourceUrl(file);
         const embed = embedCode(file);
         const row = document.createElement("div");
         row.className = "video-row";
@@ -322,29 +329,40 @@
         urlText.textContent = player;
         url.append(urlText);
 
-        const copyButton = document.createElement("button");
-        copyButton.type = "button";
-        copyButton.textContent = "Copy player";
-        copyButton.addEventListener("click", () => copy(player));
+        const actions = document.createElement("div");
+        actions.className = "row-actions";
 
-        const fileButton = document.createElement("button");
-        fileButton.type = "button";
-        fileButton.textContent = "Copy file";
-        fileButton.addEventListener("click", () => copy(source));
+        const playerButton = document.createElement("button");
+        playerButton.type = "button";
+        playerButton.textContent = "Copy player";
+        playerButton.addEventListener("click", () => copy(player));
 
         const embedButton = document.createElement("button");
         embedButton.type = "button";
         embedButton.textContent = "Embed code";
         embedButton.addEventListener("click", () => copy(embed));
 
+        const fileButton = document.createElement("button");
+        fileButton.type = "button";
+        fileButton.textContent = "Copy file";
+        fileButton.addEventListener("click", () => copy(source));
+
         const openButton = document.createElement("a");
         openButton.className = "button";
         openButton.href = player;
         openButton.target = "_blank";
         openButton.rel = "noopener";
-        openButton.textContent = "Open player";
+        openButton.textContent = "Open";
 
-        row.append(name, url, copyButton, fileButton, embedButton, openButton);
+        const manageButton = document.createElement("a");
+        manageButton.className = "button";
+        manageButton.href = githubUrl(file);
+        manageButton.target = "_blank";
+        manageButton.rel = "noopener";
+        manageButton.textContent = "Manage";
+
+        actions.append(playerButton, embedButton, fileButton, openButton, manageButton);
+        row.append(name, url, actions);
         videoList.append(row);
       });
     }
@@ -360,7 +378,7 @@
           .sort((a, b) => a.name.localeCompare(b.name));
         render(files);
       } catch {
-        status("Could not load the video list. Use the direct pattern below with the exact filename.");
+        status("Could not load the video list. Refresh in a minute, or use Manage files to confirm the upload.");
       }
     }
 
@@ -369,7 +387,7 @@
         await navigator.clipboard.writeText(text);
         showToast("Copied");
       } catch {
-        showToast("Select the link to copy");
+        showToast("Select the text to copy");
       }
     }
 
@@ -381,12 +399,12 @@
     }
 
     document.querySelector("#refresh").addEventListener("click", loadVideos);
-    document.querySelector("#copyAll").addEventListener("click", () => {
-      if (currentLinks.length === 0) {
-        showToast("No links yet");
+    document.querySelector("#copyAllPlayers").addEventListener("click", () => {
+      if (currentPlayers.length === 0) {
+        showToast("No players yet");
         return;
       }
-      copy(currentLinks.join("\n"));
+      copy(currentPlayers.join("\n"));
     });
     document.querySelector("#copyAllEmbeds").addEventListener("click", () => {
       if (currentEmbeds.length === 0) {

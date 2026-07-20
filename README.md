@@ -14,18 +14,23 @@ Upload videos here:
 https://github.com/legoretro/VideoCenter/upload/main/videos
 ```
 
-The helper page automatically lists the uploaded video files and gives you copy buttons for:
+The helper page automatically lists uploaded videos directly from GitHub and gives copy buttons for:
 
 - clean player URLs
 - raw file URLs
 - iframe embed codes for Genially
+- GitHub file management links
 
-Clean player link pattern:
+Clean player links look like this:
 
 ```text
-https://legoretro.github.io/VideoCenter/player.html?v=VIDEO-SOURCE
+https://legoretro.github.io/VideoCenter/player.html?v=RAW-GITHUB-VIDEO-URL
 ```
 
 Use `.mp4` with H.264 video and AAC audio for best browser support.
 
-If Genially shows `null` for a plain video URL, use the helper page's `Embed code` button instead. The player and embed options use the raw GitHub file behind the scenes, so they can work even while GitHub Pages is still updating direct `/videos/...` links.
+If Genially shows `null` for a plain video URL, use the helper page's `Embed code` button instead.
+
+## Editing
+
+Static GitHub Pages cannot save uploads, deletes, or edits by itself. Use the helper page's `Upload` and `Manage files` buttons to edit the files in GitHub. New uploads appear on the helper page after GitHub finishes saving them and you click `Refresh`.
