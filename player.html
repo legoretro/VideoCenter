@@ -72,6 +72,7 @@
     const shouldAutoplay = params.get("autoplay") === "1";
     const shouldMute = params.get("muted") === "1" || shouldAutoplay;
     const shouldLoop = params.get("loop") === "1";
+    const shouldShowControls = params.get("controls") !== "0";
 
     function mimeFor(url) {
       const clean = url.split("?")[0].toLowerCase();
@@ -101,11 +102,12 @@
       video.autoplay = shouldAutoplay;
       video.muted = shouldMute;
       video.loop = shouldLoop;
+      video.controls = shouldShowControls;
       video.load();
 
       if (shouldAutoplay) {
         video.play().catch(() => {
-          video.controls = true;
+          if (shouldShowControls) video.controls = true;
         });
       }
     }

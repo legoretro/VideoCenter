@@ -231,13 +231,13 @@
       <div class="top">
         <div>
           <h1>VideoCenter</h1>
-          <p>Open anywhere. Copy the Genially embed or player link. Manage files on GitHub.</p>
+          <p>Open anywhere. Copy an autoplay loop player or Genially embed.</p>
         </div>
         <div class="actions">
           <a class="button primary" href="https://github.com/legoretro/VideoCenter/upload/main/videos">Upload</a>
           <a class="button" href="https://github.com/legoretro/VideoCenter/tree/main/videos">Manage files</a>
           <button id="refresh" type="button">Refresh</button>
-          <button id="copyAllPlayers" type="button">Copy all players</button>
+          <button id="copyAllPlayers" type="button">Copy autoplay links</button>
           <button id="copyAllEmbeds" type="button">Copy all embeds</button>
         </div>
       </div>
@@ -248,7 +248,7 @@
       </div>
 
       <div class="note">
-        Genially: use <strong>Embed code</strong> first. Use <strong>Copy player</strong> when Genially asks for a website URL. The player uses GitHub's raw file URL so it avoids the 404-prone direct /videos link.
+        Genially: use <strong>Embed code</strong> first. It autoplays, loops, is muted, and hides controls. Browsers usually block autoplay with sound.
       </div>
     </section>
   </main>
@@ -283,6 +283,10 @@
       const params = new URLSearchParams();
       params.set("v", sourceUrl(file));
       params.set("title", file.name);
+      params.set("autoplay", "1");
+      params.set("muted", "1");
+      params.set("loop", "1");
+      params.set("controls", "0");
       return base + "player.html?" + params.toString();
     }
 
@@ -334,7 +338,7 @@
 
         const playerButton = document.createElement("button");
         playerButton.type = "button";
-        playerButton.textContent = "Copy player";
+        playerButton.textContent = "Autoplay URL";
         playerButton.addEventListener("click", () => copy(player));
 
         const embedButton = document.createElement("button");

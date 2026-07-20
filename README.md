@@ -16,7 +16,7 @@ https://github.com/legoretro/VideoCenter/upload/main/videos
 
 The helper page automatically lists uploaded videos directly from GitHub and gives copy buttons for:
 
-- clean player URLs
+- autoplay loop player URLs
 - raw file URLs
 - iframe embed codes for Genially
 - GitHub file management links
@@ -24,12 +24,12 @@ The helper page automatically lists uploaded videos directly from GitHub and giv
 Clean player links look like this:
 
 ```text
-https://legoretro.github.io/VideoCenter/player.html?v=RAW-GITHUB-VIDEO-URL
+https://legoretro.github.io/VideoCenter/player.html?v=RAW-GITHUB-VIDEO-URL&autoplay=1&muted=1&loop=1&controls=0
 ```
 
 Use `.mp4` with H.264 video and AAC audio for best browser support.
 
-If Genially shows `null` for a plain video URL, use the helper page's `Embed code` button instead.
+If Genially shows `null` for a plain video URL, use the helper page's `Embed code` button instead. Autoplay is muted because browsers usually block autoplay with sound.
 
 ## Editing
 
